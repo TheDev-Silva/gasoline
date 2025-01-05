@@ -1,5 +1,5 @@
 
-import { AntDesign, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, Feather, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, FlatList, Pressable, Keyboard, ScrollView, RefreshControl } from 'react-native';
@@ -133,13 +133,23 @@ export default function CalculateFuelPrice() {
 
    return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-         <ScrollView contentContainerStyle={{ flex: 1 }}
+         <ScrollView contentContainerStyle={{ flex: 1, padding: 5 }}
             refreshControl={
                <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
             }
          >
-            <View style={styles.container}>
-               <Text style={styles.title}>Calculadora de litros/preço</Text>
+            <View style={[styles.container, { borderWidth: 1, borderColor: '#ccc', borderRadius: 5 }]}>
+               <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingTop: 10, paddingBottom: 10 }}>
+                  <Text style={{ fontSize: 20, fontWeight: 'bold', textTransform: 'uppercase' }}>Calculadora</Text>
+                  <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
+                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
+                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
+                     {/* <Entypo name="adjust" size={20} color="#1a1a1a" />
+                     <Feather name="circle" size={24} color="black" />
+                     <Feather name="circle" size={24} color="black" /> */}
+                  </View>
+               </View>
 
                {/* Seleção de Posto */}
                <Text style={styles.label}>Selecione o Posto</Text>
@@ -189,8 +199,8 @@ export default function CalculateFuelPrice() {
                   <Text style={styles.selectorText}>
                      {selectedFuel
                         ? <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                           <Text>{`${getFuelTypeName(parseInt(selectedFuel))}`}</Text>
-                           <Text> R$ {relatedFuels.find((f) => f.fuelType === selectedFuel)?.price.toFixed(2)}</Text>
+                           <Text style={styles.selectorText}>{`${getFuelTypeName(parseInt(selectedFuel))}`}</Text>
+                           <Text style={styles.selectorText}> R$ {relatedFuels.find((f) => f.fuelType === selectedFuel)?.price.toFixed(2)}</Text>
                         </View>
                         : 'Selecione um combustível'}
                   </Text>
@@ -228,7 +238,7 @@ export default function CalculateFuelPrice() {
                </Modal>
 
                {/* Campo de Entrada de Litros */}
-               <Text style={styles.label}>Defina um metodo de entrada</Text>
+               <Text style={styles.label}>Defina um método de entrada</Text>
                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                   <TouchableOpacity onPress={() => setCalculationType('liters')} style={[styles.option, { backgroundColor: calculationType === 'liters' ? '#1a1a1a' : '#fff', borderWidth: calculationType === 'liters' ? 1 : 1, borderColor: calculationType === 'liters' ? '' : '#ccc' }]}>
                      <Text style={[styles.textTouch, { fontWeight: 'bold', color: calculationType === 'liters' ? '#fff' : '#1a1a1a99', }]}>Por Litros</Text>
@@ -260,11 +270,11 @@ export default function CalculateFuelPrice() {
                   style={[styles.totalPrice]}
                >
                   <View style={{ width: '98%', borderRadius: 5, margin: 0, alignItems: 'center', justifyContent: 'center' }}>
-                     <Text style={{ textAlign: 'center', padding: 10, color: '#1a1a1a' }}>
-                        {selectedFuel
-                           ? <Text style={styles.result}>Modelo de entrada definido: "{calculationType === 'liters' ? 'Litros' : 'Valor'}"</Text>
-                           : `modo de busca`}
-                     </Text>
+
+                     {selectedFuel
+                        ? <Text style={[styles.result, { textAlign: 'center', padding: 10, color: '#1a1a1a' }]}>Método de entrada definido: "{calculationType === 'liters' ? 'Litro' : 'Valor'}"</Text>
+                        : null}
+
                   </View>
                   {totalPrice !== null ?
                      <View style={{ flex: 1, width: '99%', flexDirection: 'column', justifyContent: 'center', margin: 2, alignItems: 'center', paddingTop: 10 }}>
@@ -293,7 +303,7 @@ export default function CalculateFuelPrice() {
                         </View>
                         <View style={{ backgroundColor: '#f04242', width: '100%', borderRadius: 5, alignItems: 'center', justifyContent: 'center', padding: 15 }}>
 
-                           <Text style={[styles.result, {color: '#fff'}]}>Preço total: R$ {totalPrice?.toFixed(2)}</Text>
+                           <Text style={[styles.result, { color: '#fff' }]}>Preço total: R$ {totalPrice?.toFixed(2)}</Text>
                         </View>
 
                      </View>
@@ -315,7 +325,7 @@ export default function CalculateFuelPrice() {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      padding: 20,
+      padding: 15,
       backgroundColor: '#fff',
    },
    title: {
@@ -342,18 +352,18 @@ const styles = StyleSheet.create({
    selectorText: {
       fontSize: 16,
       color: '#333',
-
+      fontWeight: 'bold'
    },
    input: {
       borderWidth: 1,
       borderColor: '#ccc',
       borderRadius: 5,
-      padding: 10,
-      marginBottom: 20,
+      padding: 15,
+      marginBottom: 15,
    },
    button: {
       backgroundColor: '#1a1a1a',
-      padding: 20,
+      padding: 15,
       borderRadius: 5,
       alignItems: 'center',
 
@@ -416,7 +426,7 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#e9e9e9',
       borderRadius: 5,
-      marginTop: 30,
+      marginTop: 15,
 
       boxShadow: '1px 2px 7px #000'
    },
