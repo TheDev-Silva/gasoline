@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Animated, Easing } from 'react-native';
-import { Colors } from '../../styles/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 /* interface imagePropos {
@@ -21,7 +20,7 @@ export default function Index() {
          if (token) {
             router.push('/welcome');
          } else {
-            router.push('/');
+            router.push('/login');
          }
       }
 

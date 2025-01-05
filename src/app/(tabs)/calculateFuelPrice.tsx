@@ -259,29 +259,29 @@ export default function CalculateFuelPrice() {
                <View
                   style={[styles.totalPrice]}
                >
-                  <View style={{ backgroundColor: '#f04242', width: '98%', borderRadius: 5, margin: 2, alignItems: 'center', justifyContent: 'center' }}>
-                     <Text style={{ textAlign: 'center', padding: 15, color: '#fff' }}>
+                  <View style={{ width: '98%', borderRadius: 5, margin: 0, alignItems: 'center', justifyContent: 'center' }}>
+                     <Text style={{ textAlign: 'center', padding: 10, color: '#1a1a1a' }}>
                         {selectedFuel
-                           ? <Text style={styles.result}>Modelo de entrada "{calculationType === 'liters' ? 'Litros' : 'Valor'}"</Text>
+                           ? <Text style={styles.result}>Modelo de entrada definido: "{calculationType === 'liters' ? 'Litros' : 'Valor'}"</Text>
                            : `modo de busca`}
                      </Text>
                   </View>
                   {totalPrice !== null ?
-                     <View style={{ flex: 1, width: '99%', flexDirection: 'column', justifyContent: 'center', padding:10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                           <FontAwesome5 name="gas-pump" size={40} color={'#f04242'} />
-                           {<AntDesign name={calculationType === 'liters' ? "arrowright" : "arrowleft"} size={24} color="#1a1a1a" />}
-                           <FontAwesome6 name="sack-dollar" size={40} color="green" />
+                     <View style={{ flex: 1, width: '99%', flexDirection: 'column', justifyContent: 'center', margin: 2, alignItems: 'center', paddingTop: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 20, width: '60%' }}>
+                           <FontAwesome5 name="gas-pump" size={50} color={'#f04242'} />
+                           <AntDesign name={calculationType === 'liters' ? "arrowright" : "arrowleft"} size={24} color="#1a1a1a" />
+                           <FontAwesome6 name="sack-dollar" size={50} color="green" />
                         </View>
 
-                        <View style={{flex: 1, width: '99%', alignItems: 'center' }}>
+                        <View style={{ flex: 1, width: '99%', alignItems: 'center', flexDirection: 'column', marginTop: 10 }}>
                            {calculationType === 'liters' && (
-                              <View style={{flexDirection: 'row'}}>
-                                 <Text style={styles.result}>{liters} litros: </Text>
-                                 <Text style={[styles.result, { marginBottom: 10 }]}>Valor do(a) {selectedFuel && <Text style={styles.result}>{`${getFuelTypeName(parseInt(selectedFuel))}`}</Text>} é de R$ {relatedFuels.find((f) => f.fuelType === selectedFuel)?.price.toFixed(2)}</Text>
+                              <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                 <Text style={styles.result}>{parseFloat(liters).toFixed(2)} litros: </Text>
+                                 <Text style={[styles.result, { marginBottom: 10 }]}>R$ {relatedFuels.find((f) => f.fuelType === selectedFuel)?.price.toFixed(2)}</Text>
                               </View>
                            )}
-                           {/* <Text style={styles.result}>Preço total: R$ {totalPrice?.toFixed(2)}</Text> */}
+
                            {calculationType === 'value' && (
                               <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                  {/*  */}
@@ -291,11 +291,17 @@ export default function CalculateFuelPrice() {
                               </View>
                            )}
                         </View>
+                        <View style={{ backgroundColor: '#f04242', width: '100%', borderRadius: 5, alignItems: 'center', justifyContent: 'center', padding: 15 }}>
 
+                           <Text style={[styles.result, {color: '#fff'}]}>Preço total: R$ {totalPrice?.toFixed(2)}</Text>
+                        </View>
 
                      </View>
                      : (
-                        <Text>Modelo de Busca aguardando...</Text>
+                        <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                           <Text style={{ textAlign: 'center' }}>Modelo de Busca aguardando...</Text>
+                        </View>
+
                      )}
                </View>
 
@@ -405,7 +411,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
    },
    totalPrice: {
-      justifyContent: 'center',
+      //justifyContent: 'center',
       alignItems: 'center',
       flex: 1,
       backgroundColor: '#e9e9e9',
