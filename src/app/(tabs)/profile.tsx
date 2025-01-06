@@ -31,20 +31,18 @@ export default function Profile() {
    >([]);
    const [isExpanded, setIsExpanded] = useState(false);
    const panelHeight = useSharedValue(50); // Altura inicial com apenas o ícone visível
-   const [calculatedHeight, setCalculatedHeight] = useState(330);
+   const [calculatedHeight, setCalculatedHeight] = useState(250);
    const [isRotation, setIsRotation] = useState(true)
 
    const animatedStyle = useAnimatedStyle(() => ({
-      minHeight: withTiming(panelHeight.value, { duration: 50 }),
+      height: panelHeight.value,
    }));
 
+
    const togglePanel = () => {
-      if (isExpanded) {
-         panelHeight.value = 50; // Voltar para a altura inicial
-      } else {
-         // Se já tiver calculado a altura dinâmica, use-a
-         panelHeight.value = Math.min(screenHeight * 0.5,); // Expande dinamicamente
-      }
+      panelHeight.value = withTiming(isExpanded ? 50 : Math.min(screenHeight * 0.5, 300), {
+         duration: 300, // Duração da animação em milissegundos
+      });
       setIsExpanded(!isExpanded);
    };
 
@@ -330,10 +328,10 @@ export default function Profile() {
 
                   <Animated.View
                      style={[styles.modalContainer, animatedStyle]}
-                     /* onLayout={(event) => {
-                        const { height } = event.nativeEvent.layout;
-                        setCalculatedHeight(height); // Atualiza a altura medida
-                     }} */
+                  /* onLayout={(event) => {
+                     const { height } = event.nativeEvent.layout;
+                     setCalculatedHeight(height); // Atualiza a altura medida
+                  }} */
                   >
                      <TouchableOpacity
                         onPress={togglePanel}
@@ -342,7 +340,7 @@ export default function Profile() {
                         <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />
                      </TouchableOpacity>
                      {isExpanded ? (
-                        <View style={{ flex: 1}}>
+                        <View style={{ flex: 1 }}>
                            <View style={{ flexDirection: "column" }}>
                               <Text style={styles.modalTitle}>{selectedFuelStation?.GasStation.name || ""}</Text>
                               <Text style={styles.modalText}>Endereço: {selectedFuelStation?.GasStation.address || ""}</Text>
@@ -355,7 +353,7 @@ export default function Profile() {
                            {fuelPrices
                               .filter((item) => item.gasStationId === selectedGasStationId) // Filtra os combustíveis pelo posto selecionado
                               .map((item) => (
-                                 <ScrollView key={item.id} contentContainerStyle={{ marginBottom: 0, gap: 1}}>
+                                 <ScrollView key={item.id} contentContainerStyle={{ flex: 1, marginBottom: 0, gap: 1 }}>
 
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 5, borderWidth: 1, borderColor: "#c5c5c5", gap: 10, alignItems: "center", borderRadius: 5 }}>
                                        <Text style={{ fontWeight: "bold", textTransform: "uppercase", width: "50%" }}>
