@@ -5,8 +5,6 @@ import Toast from 'react-native-toast-message'
 import { useRouter } from 'expo-router';
 import { FuelPrice } from '@/types/fuelPrice';
 import * as Location from 'expo-location';
-import { API_KEY, BASE_URL_API } from '@/env';
-
 
 interface FuelPricesContextProps {
    fuelPrices: FuelPrice[];
@@ -90,7 +88,7 @@ export const FuelPricesProvider: React.FC<FuelPricesProviderProps> = ({ children
 
          const queryParams = new URLSearchParams(filters as any).toString();
          const response = await fetch(
-            `${BASE_URL_API}/fuel-prices?${queryParams}`,
+            `http://192.168.0.13:3000/fuel-prices?${queryParams}`,
             {
                method: 'GET',
                headers: { Authorization: `Bearer ${token}` },
@@ -143,7 +141,7 @@ export const FuelPricesProvider: React.FC<FuelPricesProviderProps> = ({ children
          console.error('Erro ao obter localização:', error);
          Toast.show({
             type: 'error',
-            
+
             text2: 'Falha ao capturar a localização.',
          });
 

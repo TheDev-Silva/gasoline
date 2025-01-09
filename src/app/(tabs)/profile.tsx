@@ -8,6 +8,7 @@ import useFuelPrices from "../context/fuelPriceAPI";
 import { fuelTypes } from "./welcome";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
+const URL_API_GASOLINE = process.env.BASE_URL_API_GASOLINE
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Profile() {
@@ -31,8 +32,9 @@ export default function Profile() {
    >([]);
    const [isExpanded, setIsExpanded] = useState(false);
    const panelHeight = useSharedValue(50); // Altura inicial com apenas o ícone visível
-   const [calculatedHeight, setCalculatedHeight] = useState(250);
+
    const [isRotation, setIsRotation] = useState(true)
+
 
    const animatedStyle = useAnimatedStyle(() => ({
       height: panelHeight.value,
@@ -91,7 +93,7 @@ export default function Profile() {
 
 
    const geocodeFuelPrices = async () => {
-      const apiKey = "AIzaSyBiCdjL4WFleM7GYQWnpk4qo2piZ8k8N7A"; // Sua chave da API Google
+      const apiKey = ""; // Sua chave da API Google
 
       try {
          const geocodedData = await Promise.all(
@@ -150,9 +152,9 @@ export default function Profile() {
             Alert.alert("Erro", "Localização atual não disponível.");
             return;
          }
-         const apiKey = "AIzaSyBqXz88MXF38uOyoV_oTBzQo9-X1B_XY6o"; // Substitua pela sua chave da Google API
+         const apiKeyRoute = ""; // Substitua pela sua chave da Google API
          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${destination.latitude},${destination.longitude}&key=${apiKey}`
+            `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${destination.latitude},${destination.longitude}&key=${apiKeyRoute}`
          );
          const data = await response.json();
 

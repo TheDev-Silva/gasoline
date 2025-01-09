@@ -7,9 +7,7 @@ import Toast from 'react-native-toast-message';
 import useFuelPrices from '../context/fuelPriceAPI';
 import { FuelPrice } from '@/types/FuelPrice'
 import SearchBarModal from '../searchBarModal';
-import { BASE_URL_API } from '@/env';
 import React from 'react';
-
 
 
 
@@ -90,7 +88,7 @@ export default function Welcome() {
             return;
          }
 
-         const response = await fetch(`${BASE_URL_API}/register-userId`, {
+         const response = await fetch(`http://192.168.0.13:3000/register-userId`, {
             method: 'GET',
             headers: {
                'Content-Type': 'application/json',
@@ -164,27 +162,27 @@ export default function Welcome() {
 
    useFocusEffect(
       React.useCallback(() => {
-        const backAction = () => {
-          if (exitApp) {
-            BackHandler.exitApp(); // Fecha o app se já clicou antes
-          } else {
-            setExitApp(true); // Define o estado para true
-            ToastAndroid.show("Pressione novamente para sair", ToastAndroid.SHORT); // Exibe o Toast
-  
-            // Reseta o estado para false após 2 segundos
-            setTimeout(() => setExitApp(false), 2000);
-          }
-          return true; // Impede o comportamento padrão do botão voltar
-        };
-  
-        const backHandler = BackHandler.addEventListener(
-          "hardwareBackPress",
-          backAction
-        );
-  
-        return () => backHandler.remove(); // Remove o listener ao sair da tela
+         const backAction = () => {
+            if (exitApp) {
+               BackHandler.exitApp(); // Fecha o app se já clicou antes
+            } else {
+               setExitApp(true); // Define o estado para true
+               ToastAndroid.show("Pressione novamente para sair", ToastAndroid.SHORT); // Exibe o Toast
+
+               // Reseta o estado para false após 2 segundos
+               setTimeout(() => setExitApp(false), 2000);
+            }
+            return true; // Impede o comportamento padrão do botão voltar
+         };
+
+         const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+         );
+
+         return () => backHandler.remove(); // Remove o listener ao sair da tela
       }, [exitApp])
-    );
+   );
 
    return (
 
