@@ -23,7 +23,6 @@ import Animated, {
    withTiming,
    Easing,
 } from "react-native-reanimated";
-import { BASE_URL_API } from '../types/env';
 import SelectFuelPosto from './selectFuelPosto';
 import { GasStations } from '@/types/fuelPrice';
 import { Picker } from '@react-native-picker/picker';

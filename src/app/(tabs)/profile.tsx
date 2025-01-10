@@ -6,7 +6,7 @@ import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Dim
 import MapView, { Marker, Polyline } from "react-native-maps";
 import useFuelPrices from "../context/fuelPriceAPI";
 import { fuelTypes } from "./welcome";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const URL_API_GASOLINE = process.env.BASE_URL_API_GASOLINE
 const { height: screenHeight } = Dimensions.get("window");
@@ -33,7 +33,7 @@ export default function Profile() {
    const [isExpanded, setIsExpanded] = useState(false);
    const panelHeight = useSharedValue(50); // Altura inicial com apenas o ícone visível
 
-   const [isRotation, setIsRotation] = useState(true)
+   //const [isRotation, setIsRotation] = useState(true)
 
 
    const animatedStyle = useAnimatedStyle(() => ({
@@ -93,7 +93,7 @@ export default function Profile() {
 
 
    const geocodeFuelPrices = async () => {
-      const apiKey = ""; // Sua chave da API Google
+      const apiKey = "AIzaSyBiCdjL4WFleM7GYQWnpk4qo2piZ8k8N7A"; // Sua chave da API Google
 
       try {
          const geocodedData = await Promise.all(
@@ -144,7 +144,7 @@ export default function Profile() {
 
    const fetchRoute = async (destination: { latitude: number; longitude: number }) => {
 
-      setIsRotation(true)
+      //setIsRotation(true)
 
 
       try {
@@ -152,7 +152,7 @@ export default function Profile() {
             Alert.alert("Erro", "Localização atual não disponível.");
             return;
          }
-         const apiKeyRoute = ""; // Substitua pela sua chave da Google API
+         const apiKeyRoute = "AIzaSyBqXz88MXF38uOyoV_oTBzQo9-X1B_XY6o"; // Substitua pela sua chave da Google API
          const response = await fetch(
             `https://maps.googleapis.com/maps/api/directions/json?origin=${latitude},${longitude}&destination=${destination.latitude},${destination.longitude}&key=${apiKeyRoute}`
          );
@@ -172,7 +172,7 @@ export default function Profile() {
       } catch (error) {
          console.log(error);
       } finally {
-         setIsRotation(false)
+         //setIsRotation(false)
       }
 
 
@@ -337,37 +337,41 @@ export default function Profile() {
                   >
                      <TouchableOpacity
                         onPress={togglePanel}
-                        style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}
+                        style={{ alignItems: "center", justifyContent: "center", paddingBottom: isExpanded ? 5 : -10,  }}
                      >
-                        <MaterialCommunityIcons name="dots-horizontal" size={24} color="black" />
+                        <Ionicons name={isExpanded ? 'arrow-down' : 'arrow-up'} size={24} color="black" style={{ textAlign: 'center' }} />
                      </TouchableOpacity>
                      {isExpanded ? (
-                        <View style={{ flex: 1 }}>
-                           <View style={{ flexDirection: "column" }}>
+                        <View style={{ flex: 1, width: 350 }}>
+                           <View style={{ flexDirection: "column", flex: 1, width: '100%' }}>
                               <Text style={styles.modalTitle}>{selectedFuelStation?.GasStation.name || ""}</Text>
                               <Text style={styles.modalText}>Endereço: {selectedFuelStation?.GasStation.address || ""}</Text>
-                              <Text style={styles.modalText}>Distância: {routeDistance || "Calculando..."}</Text>
-                              <Text style={styles.modalText}>Tempo: {routeDuration || "Calculando..."}</Text>
+                              <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
+                                 <Text style={[styles.modalText, {fontWeight: 'bold'}]}><Text style={{fontWeight: '400'}}>Distância:</Text> {routeDistance || "Calculando..."}</Text>
+                              <Text style={[styles.modalText, {fontWeight: 'bold'}]}><Text style={{fontWeight: '400'}}>Tempo:</Text> {routeDuration || "Calculando..."}</Text>
+                              </View>
+                              
                            </View>
-                           <Text style={{ fontWeight: "bold", fontSize: 16, textTransform: "uppercase", marginTop: 10, marginBottom: 10 }}>
+                           <Text style={{ fontWeight: "bold", fontSize: 16, marginTop: 5, marginBottom: 10 }}>
                               Preços e Combustíveis
                            </Text>
-                           {fuelPrices
-                              .filter((item) => item.gasStationId === selectedGasStationId) // Filtra os combustíveis pelo posto selecionado
-                              .map((item) => (
-                                 <ScrollView key={item.id} contentContainerStyle={{ flex: 1, marginBottom: 0, gap: 1 }}>
-
-                                    <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 5, borderWidth: 1, borderColor: "#c5c5c5", gap: 10, alignItems: "center", borderRadius: 5 }}>
-                                       <Text style={{ fontWeight: "bold", textTransform: "uppercase", width: "50%" }}>
-                                          {getFuelTypeName(parseInt(item.fuelType))}
-                                       </Text>
-                                       <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
-                                          <Text>R$ {item.price.toFixed(2)}</Text>
-                                          <Text>R$ {createdAt}</Text>
+                           <View style={{ flex: 1 }}>
+                              <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+                                 {fuelPrices
+                                    .filter((item) => item.gasStationId === selectedGasStationId)
+                                    .map((item) => (
+                                       <View key={item.id} style={styles.fuelPriceContainer}>
+                                          <Text style={styles.fuelType}>
+                                             {getFuelTypeName(parseInt(item.fuelType))}
+                                          </Text>
+                                          <View style={styles.priceDetails}>
+                                             <Text>R$ {item.price.toFixed(2)}</Text>
+                                             <Text>{createdAt}</Text>
+                                          </View>
                                        </View>
-                                    </View>
-                                 </ScrollView>
-                              ))}
+                                    ))}
+                              </ScrollView>
+                           </View>
                            <TouchableOpacity
                               style={styles.button}
                               onPress={() => openGoogleMaps({ latitude: selectedFuelStation.latitude, longitude: selectedFuelStation.longitude })}
@@ -387,7 +391,7 @@ export default function Profile() {
 
             )}
          </View>
-         {isRotation === true}
+         {/* {isRotation === true} */}
       </GestureHandlerRootView>
    );
 }
@@ -451,7 +455,7 @@ const styles = StyleSheet.create({
       marginBottom: 3,
    },
    modalOverlay: {
-      minHeight: 0,
+
       flex: 1,
       width: '100%',
       justifyContent: "flex-end",
@@ -459,6 +463,7 @@ const styles = StyleSheet.create({
       backgroundColor: "#f5f5f5",
    },
    modalContainer: {
+      height: 500,
       width: "100%",
       backgroundColor: "#fff",
       borderTopLeftRadius: 20,
@@ -492,4 +497,29 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: "bold",
    },
+
+   scrollViewContainer: {
+      paddingBottom: 10,
+   },
+   fuelPriceContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: 'center',
+      padding: 5,
+      borderWidth: 1,
+      borderColor: "#c5c5c5",
+      borderRadius: 5,
+      marginBottom: 10,
+   },
+   fuelType: {
+      fontWeight: "bold",
+      textTransform: "uppercase",
+      width: "50%",
+   },
+   priceDetails: {
+      flexDirection: "column",
+      alignItems: "flex-end",
+   },
+
+
 });

@@ -280,7 +280,7 @@ export default function CalculateFuelPrice() {
                      <View style={{ flex: 1, width: '99%', flexDirection: 'column', justifyContent: 'center', margin: 2, alignItems: 'center', paddingTop: 10 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 20, width: '60%' }}>
                            <FontAwesome5 name="gas-pump" size={50} color={'#f04242'} />
-                           <AntDesign name={calculationType === 'liters' ? "arrowright" : "arrowleft"} size={24} color="#1a1a1a" />
+                           <Ionicons name={calculationType === 'liters' ? "arrow-back" : "arrow-forward"} size={24} color="#1a1a1a" />
                            <FontAwesome6 name="sack-dollar" size={50} color="green" />
                         </View>
 
