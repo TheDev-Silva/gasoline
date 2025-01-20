@@ -1,35 +1,60 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Animated, Easing } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-/* interface imagePropos {
-   image: string
-} */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
    const router = useRouter();
-   const [isLoading, setIsLoading] = useState(true); // Controla o estado de carregamento
+   const [isLoading, setIsLoading] = useState(true);
    const rotateValue = useRef(new Animated.Value(0)).current;
+
+   // Função para validar o token com a API externa
+   const validateToken = async (token: any) => {
+      try {
+         const response = await fetch('http://seu-servidor.com/validate-token', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+         });
+
+         const data = await response.json();
+
+         if (response.ok) {
+            return data.valid; // Retorna se o token é válido
+         }
+
+         console.warn('Erro ao validar token:', data.error);
+         return false;
+      } catch (error) {
+         console.error('Erro ao validar token:', error);
+         return false;
+      }
+   };
+
 
    // Verificar autenticação
    const checkAuthentication = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
          const token = await AsyncStorage.getItem('tokenAuthentication');
          if (token) {
-            setTimeout(() => {
+            const isValid = await validateToken(token);
+            if (isValid) {
                router.push('/welcome'); // Redireciona para a tela de boas-vindas
-            }, 1000);
-         } else {
-            setTimeout(() => {
+            } else {
+               await AsyncStorage.removeItem('tokenAuthentication'); // Remove o token expirado
                router.push('/login'); // Redireciona para a tela de login
-            }, 1000);
+            }
+         } else {
+            router.push('/login'); // Redireciona para a tela de login
          }
       } catch (error) {
          console.error('Erro ao verificar autenticação:', error);
+         router.push('/login'); // Redireciona para login em caso de erro
       } finally {
-         setIsLoading(false); // Garante que a animação pare após a verificação
+         setIsLoading(false); // Finaliza o estado de carregamento
       }
    };
 
@@ -49,7 +74,6 @@ export default function Index() {
    useEffect(() => {
       checkAuthentication(); // Verifica a autenticação ao montar o componente
       startRotation(); // Inicia a animação
-      
    }, []);
 
    // Interpolação para animação de rotação
@@ -58,11 +82,9 @@ export default function Index() {
       outputRange: ['0deg', '360deg'],
    });
 
-   // Renderização condicional
    return (
       <View style={styles.container}>
          <View style={styles.content}>
-            {/* Imagem estática */}
             <Image
                source={require('./../../assets/images/icon-gasoline-price1.png')}
                alt="logo"
@@ -72,7 +94,6 @@ export default function Index() {
                   height: 250,
                }}
             />
-            {/* Imagem animada */}
             <Animated.Image
                source={require('./../../assets/images/icon-gasoline-price2.png')}
                alt="logo"
@@ -85,7 +106,6 @@ export default function Index() {
                }}
             />
          </View>
-         {/* Botão de início */}
          {!isLoading && (
             <Pressable onPress={() => router.push('/login')} style={styles.button}>
                <Text style={styles.buttonText}>
@@ -124,4 +144,3 @@ const styles = StyleSheet.create({
       fontSize: 18,
    },
 });
-
