@@ -27,7 +27,7 @@ export default function TabsLayout() {
           options={{
             tabBarIcon: ({ color, size }) => (
 
-              <Ionicons name='home' color={color} size={size} />
+              <FontAwesome5 name='home' color={color} size={size} />
             )
           }}
 
@@ -46,7 +46,7 @@ export default function TabsLayout() {
           options={{
             tabBarIcon: ({ color, size }) => (
               
-              <Ionicons name="calculator-outline" size={size} color={color} />
+              <FontAwesome5 name="calculator" size={size} color={color} />
               )
             }}
 

@@ -11,6 +11,7 @@ import {
    ActivityIndicator,
    Image,
    FlatList,
+   Keyboard,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectIFuelType from './selectIFuelType';
@@ -25,9 +26,6 @@ import Animated, {
 } from "react-native-reanimated";
 import SelectFuelPosto from './selectFuelPosto';
 import { GasStations } from '@/types/fuelPrice';
-import { Picker } from '@react-native-picker/picker';
-
-const URL_API_GASOLINE = process.env.BASE_URL_API_GASOLINE
 
 const AddFuelPrice = () => {
    const router = useRouter();
@@ -50,10 +48,10 @@ const AddFuelPrice = () => {
    //selectFuelPosto
    const [fuelStations, setFuelStations] = useState<GasStations[]>([]);
    const [selectedFuelStation, setSelectedFuelStation] = useState<string | number>('');
-   console.log('fuelStations: ', fuelStations)
+   //console.log('fuelStations: ', fuelStations)
    const [loading, setLoading] = useState(true);
    const translateY = useSharedValue(500); // Inicia fora da tela (500px para baixo)
-
+   const [isEditable, setIsEditable] = useState(true)
    const animatedStyle = useAnimatedStyle(() => {
       return {
          transform: [{ translateY: translateY.value }],
@@ -74,8 +72,9 @@ const AddFuelPrice = () => {
    useEffect(() => {
       const fetchFuelStations = async () => {
          try {
-            const token = await AsyncStorage.getItem('authToken');
-            const response = await fetch(`http://192.168.0.13:3000/gas-stations`, {
+            const token = await AsyncStorage.getItem('tokenAuthentication');
+            console.log('token aqui', token)
+            const response = await fetch(`https://gas-price-api.vercel.app/gas-stations`, {
                headers: {
                   Authorization: `Bearer ${token}`,
                },
@@ -86,10 +85,14 @@ const AddFuelPrice = () => {
                //console.log('dados de gas-stations', data);
                setFuelStations(data); // Assuma que a API retorna um array de postos
             } else {
-               console.error('Erro ao buscar os postos:', response.status);
+               Toast.show({
+                  type: 'error',
+                  text2: ` Problemas no servidor`
+               });
+               //console.error('Erro ao buscar os postos:', response.status);
             }
          } catch (error) {
-            console.error('Erro ao buscar postos:', error);
+
          }
       };
 
@@ -127,7 +130,7 @@ const AddFuelPrice = () => {
          return;
       }
 
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await AsyncStorage.getItem('tokenAuthentication');
       if (!token) {
          Toast.show({
             type: 'error',
@@ -151,7 +154,7 @@ const AddFuelPrice = () => {
 
       try {
          setIsSubmitting(true);
-         const response = await fetch(`http://192.168.0.13:3000/fuel-price`, {
+         const response = await fetch(`https://gas-price-api.vercel.app/fuel-price`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -182,11 +185,15 @@ const AddFuelPrice = () => {
          setAddress('');
          router.push('/ultimateRegister')
       } catch (error) {
-         console.error('Erro ao adicionar preço:', error);
+         //console.error('Erro ao adicionar preço:', error);
          Alert.alert('Erro', error instanceof Error ? error.message : 'Erro desconhecido');
       } finally {
          setIsSubmitting(false);
       }
+   };
+
+   const handleToggleEditable = () => {
+      setIsEditable(!isEditable); // Alterna o estado do TextInput entre habilitado e desabilitado
    };
 
 
@@ -211,7 +218,10 @@ const AddFuelPrice = () => {
                   selectedValue={selectedFuelStation || ''} // Alinha com o tipo string | number
                   value={selectedFuelStation || ''} // Alinha com o tipo string | number
                   onValueChange={(value) => handleFuelStationChange(value)} // Aceita string | number
-                  onChange={(value) => setSelectedFuelStation(value)} // Aceita string | number
+                  onChange={(value) => {
+                     setSelectedFuelStation(value)
+                     //handleToggleEditable()
+                  }} // Aceita string | number
                   name={stationName}
                   address={address}
                />
@@ -221,15 +231,20 @@ const AddFuelPrice = () => {
                   placeholder="Nome do Posto"
                   value={stationName}
                   onChangeText={setStationName}
-                  style={[styles.input, { backgroundColor: selectedFuelStation ? '#c9c9c9' : '#1a1a1a', color: selectedFuelStation ? '#1a1a1a' : '#c9c9c9' }]}
+                  style={[styles.input, { backgroundColor: selectedFuelStation ? '#e0e0e0' : '#fff', color: selectedFuelStation ? '#1a1a1a99' : '#1a1a1a' }]}
+                  editable={!selectedFuelStation}
 
                />
                <View style={styles.locationContainer}>
                   <TextInput
                      placeholder="Endereço do Posto"
                      value={address}
+                     editable={!selectedFuelStation} // Desabilita o campo se um posto for selecionado
                      onChangeText={setAddress}
-                     style={styles.inputAddres}
+                     style={[
+                        styles.inputAddres,
+                        { backgroundColor: selectedFuelStation ? '#e0e0e0' : '#fff', color: selectedFuelStation ? '#1a1a1a99' : '#1a1a1a' }, // Estilo adicional para campo desabilitado
+                     ]}
                   />
                   <TouchableOpacity onPress={handleFetchLocation} style={styles.locationButton}>
                      {isLoadingLocation ? (

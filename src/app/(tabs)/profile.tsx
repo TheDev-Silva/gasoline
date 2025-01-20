@@ -6,9 +6,8 @@ import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Dim
 import MapView, { Marker, Polyline } from "react-native-maps";
 import useFuelPrices from "../context/fuelPriceAPI";
 import { fuelTypes } from "./welcome";
-import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
-const URL_API_GASOLINE = process.env.BASE_URL_API_GASOLINE
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Profile() {
@@ -337,7 +336,7 @@ export default function Profile() {
                   >
                      <TouchableOpacity
                         onPress={togglePanel}
-                        style={{ alignItems: "center", justifyContent: "center", paddingBottom: isExpanded ? 5 : -10,  }}
+                        style={{ alignItems: "center", justifyContent: "center", paddingBottom: isExpanded ? 5 : -10, }}
                      >
                         <Ionicons name={isExpanded ? 'arrow-down' : 'arrow-up'} size={24} color="black" style={{ textAlign: 'center' }} />
                      </TouchableOpacity>
@@ -346,11 +345,11 @@ export default function Profile() {
                            <View style={{ flexDirection: "column", flex: 1, width: '100%' }}>
                               <Text style={styles.modalTitle}>{selectedFuelStation?.GasStation.name || ""}</Text>
                               <Text style={styles.modalText}>Endereço: {selectedFuelStation?.GasStation.address || ""}</Text>
-                              <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
-                                 <Text style={[styles.modalText, {fontWeight: 'bold'}]}><Text style={{fontWeight: '400'}}>Distância:</Text> {routeDistance || "Calculando..."}</Text>
-                              <Text style={[styles.modalText, {fontWeight: 'bold'}]}><Text style={{fontWeight: '400'}}>Tempo:</Text> {routeDuration || "Calculando..."}</Text>
+                              <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
+                                 <Text style={[styles.modalText, { fontWeight: 'bold' }]}><Text style={{ fontWeight: '400' }}>Distância:</Text> {routeDistance || "Calculando..."}</Text>
+                                 <Text style={[styles.modalText, { fontWeight: 'bold' }]}><Text style={{ fontWeight: '400' }}>Tempo:</Text> {routeDuration || "Calculando..."}</Text>
                               </View>
-                              
+
                            </View>
                            <Text style={{ fontWeight: "bold", fontSize: 16, marginTop: 5, marginBottom: 10 }}>
                               Preços e Combustíveis

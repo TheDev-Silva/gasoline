@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard'
+import { URL_API } from '../../constants/base';
 
 
 interface SearchBarModalProps {
@@ -41,7 +42,7 @@ const SearchBarModal: React.FC<SearchBarModalProps> = ({ visible, onClosed }) =>
                text: 'Apagar',
                onPress: async () => {
                   try {
-                     const token = await AsyncStorage.getItem('authToken');
+                     const token = await AsyncStorage.getItem('tokenAuthentication');
                      if (!token) {
                         Toast.show({
                            type: 'error',
@@ -51,7 +52,7 @@ const SearchBarModal: React.FC<SearchBarModalProps> = ({ visible, onClosed }) =>
                         return;
                      }
 
-                     const response = await fetch('http://192.168.0.13:3000/delete-userId', {
+                     const response = await fetch(`${URL_API}/delete-userId`, {
                         method: 'DELETE',
                         headers: {
                            'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ const SearchBarModal: React.FC<SearchBarModalProps> = ({ visible, onClosed }) =>
                            type: 'success',
                            text2: 'Sua conta foi excluída com sucesso!',
                         });
-                        await AsyncStorage.removeItem('authToken');
+                        await AsyncStorage.removeItem('tokenAuthentication');
                         router.replace('/login');
                      } else {
                         const error = await response.json();

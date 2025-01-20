@@ -1,0 +1,1 @@
+export const URL_API='https://gas-price-api.vercel.app'

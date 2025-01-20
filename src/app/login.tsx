@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native';
 import { Colors } from '../../styles/colors';
 import Toast from 'react-native-toast-message'
+import { URL_API } from '../../constants/base';
 
 export default function Login() {
 
@@ -19,7 +20,7 @@ export default function Login() {
       if (password != "" && email !== "") {
          setIsLoading(true)
          try {
-            const response = await fetch('http://192.168.0.13:3000/login', {
+         const response = await fetch(`https://gas-price-api.vercel.app/login`, {
                method: 'POST',
                headers: {
                   'Content-Type': 'application/json',
@@ -29,7 +30,7 @@ export default function Login() {
 
             if (response.ok) {
                const data = await response.json();
-               await AsyncStorage.setItem('authToken', data.token); // Salva o novo token
+               await AsyncStorage.setItem('tokenAuthentication', data.token); // Salva o novo token
                setTimeout(() => {
                   router.replace('/welcome'); // Redireciona para a tela inicial
                   setIsLoading(false)

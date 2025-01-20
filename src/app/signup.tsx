@@ -13,6 +13,7 @@ import { Colors } from '../../styles/colors';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { URL_API } from '../../constants/base';
 
 export default function SignUp() {
    const [name, setName] = useState('');
@@ -25,8 +26,9 @@ export default function SignUp() {
 
    const handleRegister = async () => {
       if (name && email && password) {
+         setIsLoading(true)
          try {
-            const response = await fetch('http://192.168.0.13:3000/register', {
+            const response = await fetch(`https://gas-price-api.vercel.app/register`, {
                method: 'POST',
                headers: { 'Content-Type': 'application/json' },
                body: JSON.stringify({ name, email, password }),
@@ -35,11 +37,13 @@ export default function SignUp() {
 
             if (response.ok && data.token) {
                // Salvar o token e navegar para a página segura
-               await AsyncStorage.setItem('authToken', data.token);
+               await AsyncStorage.setItem('tokenAuthentication', data.token);
+               console.log(data);
                router.push('/welcome');
                if (response.statusText === '401') {
                   Alert.alert('Sessão Expirada', 'Por favor, faça login novamente.');
-                  await AsyncStorage.removeItem('authToken');
+                  
+                  await AsyncStorage.removeItem('tokenAuthentication');
                   router.push('/login'); // Redireciona para a tela de login
                }
             } else {
@@ -47,10 +51,14 @@ export default function SignUp() {
             }
          } catch (error) {
             Alert.alert('Error', 'Erro ao registrar usuário');
+            setIsLoading(false)
+         }finally {
+            setIsLoading(false)
          }
       } else {
          Alert.alert('Atenção', 'Existe campos vazios');
       }
+      
    };
 
    const visible = () => {
@@ -68,21 +76,26 @@ export default function SignUp() {
 
          <View style={styles.viewContainer}>
             <View style={{ gap: 15 }}>
+               <View style={{ flexDirection: 'row', gap: 10, position: 'relative', alignItems: 'center', boxShadow: '0px 3px 6px #0009', borderRadius: 8 }}>
+                  <TextInput
+                     placeholder="Nome"
+                     style={[styles.input]}
+                     value={name}
+                     onChangeText={setName}
+                  />
 
-               <TextInput
-                  placeholder="Nome"
-                  style={[styles.input]}
-                  value={name}
-                  onChangeText={setName}
-               />
-               <TextInput
-                  placeholder="E-mail"
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-               />
-               <View style={{ flexDirection: 'row', gap: 10, position: 'relative', alignItems: 'center' }}>
+               </View>
+               <View style={{ flexDirection: 'row', gap: 10, position: 'relative', alignItems: 'center', boxShadow: '0px 3px 6px #0009', borderRadius: 8 }}>
+
+                  <TextInput
+                     placeholder="E-mail"
+                     style={styles.input}
+                     value={email}
+                     onChangeText={setEmail}
+                     keyboardType="email-address"
+                  />
+               </View>
+               <View style={{ flexDirection: 'row', gap: 10, position: 'relative', alignItems: 'center', boxShadow: '0px 3px 6px #0009' }}>
                   <TextInput
                      placeholder="Senha"
                      style={styles.input}
@@ -91,7 +104,7 @@ export default function SignUp() {
                      secureTextEntry={!passVisible}
                   />
                   <Pressable onPress={() => visible()} style={{ position: 'absolute', right: 10 }}>
-                     <MaterialCommunityIcons name={passVisible ? 'eye-off-outline' : 'eye-outline'} size={24} color={'#0009'}/>
+                     <MaterialCommunityIcons name={passVisible ? 'eye-off-outline' : 'eye-outline'} size={24} color={'#0009'} />
                   </Pressable>
                </View>
             </View>
@@ -140,7 +153,7 @@ const styles = StyleSheet.create({
    input: {
       width: '100%',
       height: 50,
-      boxShadow: '0px 3px 6px #0009',
+
       padding: 15,
       borderRadius: 8,
       backgroundColor: Colors.green_dark.white,

@@ -40,36 +40,13 @@ export const FuelPricesProvider: React.FC<FuelPricesProviderProps> = ({ children
 
    const [refreshKey, setRefreshKey] = useState(0);
 
-   /* const fetchCoordinatesFromAddress = async (address: string) => {
-      try {
-         const apiKey = API_KEY; // Substitua pela sua chave da API
-         const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-               address
-            )}&key=${apiKey}`
-         );
-
-         const data = await response.json();
-
-         if (data.results && data.results[0]) {
-            const { lat, lng } = data.results[0].geometry.location;
-            return { latitude: lat, longitude: lng };
-         } else {
-            console.warn('Endereço não encontrado:', address);
-            return null;
-         }
-      } catch (error) {
-         console.error('Erro ao buscar coordenadas:', error);
-         return null;
-      }
-   }; */
 
    const refresh = useCallback(() => {
       setRefreshKey((prevKey) => prevKey + 1);
    }, []);
 
    const validateAuthToken = async () => {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await AsyncStorage.getItem('tokenAuthentication');
       if (!token) {
          Toast.show({
             type: 'error',
@@ -88,7 +65,7 @@ export const FuelPricesProvider: React.FC<FuelPricesProviderProps> = ({ children
 
          const queryParams = new URLSearchParams(filters as any).toString();
          const response = await fetch(
-            `http://192.168.0.13:3000/fuel-prices?${queryParams}`,
+            `https://gas-price-api.vercel.app/fuel-prices?${queryParams}`,
             {
                method: 'GET',
                headers: { Authorization: `Bearer ${token}` },
@@ -103,11 +80,8 @@ export const FuelPricesProvider: React.FC<FuelPricesProviderProps> = ({ children
          const data = await response.json();
          setFuelPrices(data);
       } catch (error: any) {
-         //console.error('Erro ao buscar preços:', error);
-         Toast.show({
-            type: 'error',
-            text2: error.message || 'Falha ao buscar preços',
-         });
+         //console.log('Erro ao buscar preços:', error);
+         
       }
    };
 

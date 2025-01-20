@@ -9,66 +9,56 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Index() {
    const router = useRouter();
-   const [isLoading, setIsloading] = useState(false)
-   const rotateValue = useRef(new Animated.Value(0)).current; // Valor animado para rotação
+   const [isLoading, setIsLoading] = useState(true); // Controla o estado de carregamento
+   const rotateValue = useRef(new Animated.Value(0)).current;
 
-
-   useEffect(() => {
-
-      const checkAuthentication = async () => {
-         const token = await AsyncStorage.getItem('authToken');
+   // Verificar autenticação
+   const checkAuthentication = async () => {
+      setIsLoading(true)
+      try {
+         const token = await AsyncStorage.getItem('tokenAuthentication');
          if (token) {
-            router.push('/welcome');
+            setTimeout(() => {
+               router.push('/welcome'); // Redireciona para a tela de boas-vindas
+            }, 1000);
          } else {
-            router.push('/login');
+            setTimeout(() => {
+               router.push('/login'); // Redireciona para a tela de login
+            }, 1000);
          }
+      } catch (error) {
+         console.error('Erro ao verificar autenticação:', error);
+      } finally {
+         setIsLoading(false); // Garante que a animação pare após a verificação
       }
+   };
 
-      checkAuthentication()
-   }, [])
-
-
-
-   useEffect(() => {
-      setIsloading(true)
-      setTimeout(() => {
-         startRotation(); // Inicia a rotação ao montar o componente
-         setIsloading(false)
-      }, 2000);
-   }, []);
-
+   // Inicializar animação
    const startRotation = () => {
-
-      rotateValue.setValue(0)
-
+      rotateValue.setValue(0);
       Animated.loop(
          Animated.timing(rotateValue, {
             toValue: 1,
             duration: 7000,
             easing: Easing.linear,
-            delay: 500,
             useNativeDriver: true,
-         }),
-      ).start()
+         })
+      ).start();
    };
 
+   useEffect(() => {
+      checkAuthentication(); // Verifica a autenticação ao montar o componente
+      startRotation(); // Inicia a animação
+      
+   }, []);
 
-   // Interpolação para rotação
+   // Interpolação para animação de rotação
    const rotateAnimation = rotateValue.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
    });
 
-   const handleInitial = () => {
-
-      setIsloading(true)
-      setTimeout(() => {
-
-         router.push('/login')
-         setIsloading(false)
-      }, 2000);
-   }
-
+   // Renderização condicional
    return (
       <View style={styles.container}>
          <View style={styles.content}>
@@ -80,7 +70,6 @@ export default function Index() {
                   objectFit: 'contain',
                   width: 250,
                   height: 250,
-
                }}
             />
             {/* Imagem animada */}
@@ -93,19 +82,17 @@ export default function Index() {
                   height: 285,
                   position: 'absolute',
                   transform: [{ rotate: rotateAnimation }],
-
                }}
             />
          </View>
-
-         <Pressable onPress={handleInitial} style={styles.button/* { width: '80%', backgroundColor: Colors.green_dark.light, padding: 20, borderRadius: 8, marginTop: 50 } */}>
-            <Text style={styles.buttonText/* { color: Colors.green_dark.white, textAlign: 'center', textTransform: 'uppercase' } */}>{isLoading ? 'Iniciando...' : 'Iniciar'}</Text>
-         </Pressable>
-         <Text style={styles.buttonText}></Text>
-
-
-         {/* Botão visível após completar os ciclos */}
-
+         {/* Botão de início */}
+         {!isLoading && (
+            <Pressable onPress={() => router.push('/login')} style={styles.button}>
+               <Text style={styles.buttonText}>
+                  {isLoading ? 'Carregando...' : 'Iniciar'}
+               </Text>
+            </Pressable>
+         )}
       </View>
    );
 }
@@ -126,13 +113,15 @@ const styles = StyleSheet.create({
    },
    button: {
       width: '80%',
-      backgroundColor: "#fff",
+      backgroundColor: '#fff',
       padding: 18,
       borderRadius: 8,
+      marginTop: 50,
    },
    buttonText: {
-      color: "#1a1a1a",
+      color: '#1a1a1a',
       textAlign: 'center',
       fontSize: 18,
    },
 });
+

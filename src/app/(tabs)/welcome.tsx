@@ -1,4 +1,4 @@
-import { Ionicons, Zocial } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TouchableOpacity, Image, ActivityIndicator, RefreshControl, FlatList, ScrollView, BackHandler, ToastAndroid } from 'react-native';
@@ -8,7 +8,6 @@ import useFuelPrices from '../context/fuelPriceAPI';
 import { FuelPrice } from '@/types/FuelPrice'
 import SearchBarModal from '../searchBarModal';
 import React from 'react';
-
 
 
 interface UserProps {
@@ -27,6 +26,7 @@ export const fuelTypes = [
    { id: 8, name: 'Diesel S-10' },
 ]
 
+
 export default function Welcome() {
    const router = useRouter();
    const [user, setUser] = useState<UserProps | null>(null);
@@ -34,6 +34,7 @@ export default function Welcome() {
    const [modalVisible, setModalVisible] = useState(false)
    const [isRefreshing, setIsRefreshing] = useState(false);
    const [exitApp, setExitApp] = useState(false);
+
    const { fuelPrices, fetchFuelPrices, address, handleFetchLocation, refreshKey, refresh } = useFuelPrices();
    const lastFuelPriceUser: FuelPrice | null =
       fuelPrices.length > 0
@@ -67,7 +68,7 @@ export default function Welcome() {
    const handleRefresh = async () => {
       setIsRefreshing(true);
       refresh(); // Incrementa o refreshKey no contexto
-      await fetchFuelPrices(); // Recarrega os dados
+      fetchFuelPrices(); // Recarrega os dados
       setIsRefreshing(false); // Finaliza o loading
    };
 
@@ -75,20 +76,21 @@ export default function Welcome() {
 
    //console.log('dados de:', fuelPrices);
    const fetchUserData = async () => {
+
       try {
-         const token = await AsyncStorage.getItem('authToken');
+         const token = await AsyncStorage.getItem('tokenAuthentication');
          console.log(token)
          if (!token) {
             Toast.show({
                type: 'error',
-               text1: 'Erro de autenticação',
+               text1: 'Erro de autenticação de usuário!',
                text2: 'Token de autenticação não encontrado.',
             });
             setIsLoading(false);
             return;
          }
 
-         const response = await fetch(`http://192.168.0.13:3000/register-userId`, {
+         const response = await fetch(`https://gas-price-api.vercel.app/register-userId`, {
             method: 'GET',
             headers: {
                'Content-Type': 'application/json',
@@ -106,7 +108,7 @@ export default function Welcome() {
                text1: 'Erro de autenticação',
                text2: errorData.error || 'Token inválido ou expirado.',
             });
-            router.replace('/login')
+            //router.push('/login')
          }
       } catch (error) {
          Toast.show({
@@ -115,13 +117,18 @@ export default function Welcome() {
             text2: 'Não foi possível conectar ao servidor.',
          });
       } finally {
-         setIsLoading(false);
+         setIsLoading(false)
       }
+   };
+
+   const fuelPricesExist = () => {
+      return fuelPrices && fuelPrices.length > 0; // Verifica se há preços cadastrados
    };
 
    useEffect(() => {
       fetchUserData();
       fetchFuelPrices(); // Carrega os preços de combustível
+
       refresh()
    }, []);
 
@@ -189,16 +196,17 @@ export default function Welcome() {
       <View style={styles.container} >
          <View style={styles.header}>
 
+
             {user ? (
                <View style={styles.userInfo}>
                   {/* <Ionicons name="person" size={20} color="#1a1a1a" style={styles.userIcon} /> */}
-                  <TouchableOpacity onPress={() => setModalVisible(true)} style={{ padding: 5, borderWidth: 2, borderColor: '#fff', borderRadius: 100 }}>
-                     <Ionicons name="person" size={20} color="#fff" />
+                  <TouchableOpacity onPress={() => setModalVisible(true)} style={{ padding: 5, }}>
+                     <FontAwesome5 name="user-alt" size={20} color="#fff" />
                   </TouchableOpacity>
                   <View style={{ justifyContent: 'center', gap: 5 }}>
                      <Text style={styles.userName}>Olá, {user.name}</Text>
                      <View style={{ flexDirection: 'row', gap: 5 }}>
-                        <Ionicons name='location-outline' size={18} color={'#fff'} />
+                        <FontAwesome5 name='location-arrow' size={14} color={'#fff'} />
                         <Text style={{ fontSize: 12, color: '#fff' }}>{address}</Text>
                      </View>
                   </View>
@@ -206,6 +214,9 @@ export default function Welcome() {
             ) : null}
 
          </View>
+         {/* <TouchableOpacity onPress={() => router.push('/testeRoute')}>
+            <Ionicons name='arrow-forward' color={"000"} size={30} />
+         </TouchableOpacity> */}
 
          <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
@@ -268,7 +279,7 @@ export default function Welcome() {
                            </Text>
                            <Text style={{ fontSize: 16, color: '#1a1a1a' }}>
                               Inserido por: <Text style={{ fontWeight: 'bold', fontStyle: 'italic', textDecorationLine: 'underline', color: '#1a1a1a', }}>
-                                 {lastFuelPriceUser?.User?.name || 'Indefinido'}
+                                 {cheapestFuelPrice?.User?.name || 'Indefinido'}
                               </Text>
                            </Text>
                         </View>
@@ -328,7 +339,10 @@ export default function Welcome() {
                   </View>
                </View>
             </View>
+
          </ScrollView>
+
+
          <View style={{ flexDirection: 'row', gap: 10, width: '100%', justifyContent: 'center' }}>
             <TouchableOpacity style={styles.button} onPress={handleFuelPrice}>
                {isLoading && <ActivityIndicator size={15} color={'#fff'} />}
@@ -346,13 +360,12 @@ const styles = StyleSheet.create({
    container: {
       flex: 1,
       justifyContent: 'center',
-      /*alignItems: 'center', */
       backgroundColor: '#fff',
    },
    header: {
       backgroundColor: '#1a1a1a',
       width: '100%',
-      padding: 15,
+      padding: 20,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',

@@ -142,9 +142,9 @@ export default function CalculateFuelPrice() {
                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingTop: 10, paddingBottom: 10 }}>
                   <Text style={{ fontSize: 20, fontWeight: 'bold', textTransform: 'uppercase' }}>Calculadora</Text>
                   <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
-                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
-                     <View style={{width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a'}}></View>
+                     <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a' }}></View>
+                     <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a' }}></View>
+                     <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: '#1a1a1a' }}></View>
                      {/* <Entypo name="adjust" size={20} color="#1a1a1a" />
                      <Feather name="circle" size={24} color="black" />
                      <Feather name="circle" size={24} color="black" /> */}
@@ -244,14 +244,26 @@ export default function CalculateFuelPrice() {
                      <Text style={[styles.textTouch, { fontWeight: 'bold', color: calculationType === 'liters' ? '#fff' : '#1a1a1a99', }]}>Por Litros</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setCalculationType('value')} style={[styles.option, { backgroundColor: calculationType === 'value' ? '#1a1a1a' : '#fff', borderWidth: calculationType === 'value' ? 1 : 1, borderColor: calculationType === 'value' ? '' : '#ccc' }]}>
-                     <Text style={{ fontWeight: 'bold', color: calculationType === 'value' ? '#fff' : '#1a1a1a99', }}>Por Valor</Text>
+                     <Text style={{ fontWeight: '500', color: calculationType === 'value' ? '#fff' : '#1a1a1a99', }}>Por Valor</Text>
                   </TouchableOpacity>
                </View>
                <TextInput
                   style={styles.input}
                   keyboardType="numeric"
                   value={inputValue}
-                  onChangeText={(text) => setInputValue(text.replace(/[^0-9.,]/g, '').replace(',', '.'))}
+                  onChangeText={(text) => {
+                     // Remove caracteres que não são números
+                     const numericValue = text.replace(/[^0-9]/g, '');
+
+                     // Formata o valor para adicionar o ponto no lugar correto
+                     let formattedValue = numericValue.replace(/(\d)(?=(\d{2})$)/, '$1.');
+
+                     // Adiciona vírgulas a cada grupo de milhares
+                     formattedValue = formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                     setInputValue(formattedValue);
+                  }}
+
                   placeholder={calculationType === 'liters' ? 'Digite a quantidade em litros' : 'Digite o valor em reais'}
                />
 
@@ -272,7 +284,7 @@ export default function CalculateFuelPrice() {
                   <View style={{ width: '98%', borderRadius: 5, margin: 0, alignItems: 'center', justifyContent: 'center' }}>
 
                      {selectedFuel
-                        ? <Text style={[styles.result, { textAlign: 'center', padding: 10, color: '#1a1a1a' }]}>Método de entrada definido: "{calculationType === 'liters' ? 'Litro' : 'Valor'}"</Text>
+                        ? <Text style={[styles.result, { textAlign: 'center', padding: 10, color: '#1a1a1a', fontWeight: '500' }]}>Método de entrada definido: "{calculationType === 'liters' ? 'Litros' : 'Valor'}"</Text>
                         : null}
 
                   </View>
@@ -281,29 +293,31 @@ export default function CalculateFuelPrice() {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 20, width: '60%' }}>
                            <FontAwesome5 name="gas-pump" size={50} color={'#f04242'} />
                            <Ionicons name={calculationType === 'liters' ? "arrow-back" : "arrow-forward"} size={24} color="#1a1a1a" />
-                           <FontAwesome6 name="sack-dollar" size={50} color="green" />
+                           <FontAwesome5 name="comment-dollar" size={50} color="green" />
                         </View>
 
                         <View style={{ flex: 1, width: '99%', alignItems: 'center', flexDirection: 'column', marginTop: 10 }}>
                            {calculationType === 'liters' && (
-                              <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                 <Text style={styles.result}>{parseFloat(liters).toFixed(2)} litros: </Text>
-                                 <Text style={[styles.result, { marginBottom: 10 }]}>R$ {relatedFuels.find((f) => f.fuelType === selectedFuel)?.price.toFixed(2)}</Text>
+                              <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+                                 <Text style={[styles.result, { fontSize: 22, fontWeight: '500' }]}>com {parseFloat(liters).toFixed(2)} litros </Text>
+
                               </View>
                            )}
 
                            {calculationType === 'value' && (
-                              <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                 {/*  */}
-                                 <Text style={styles.result}>R$ {parseFloat(inputValue).toFixed(2)} de Combustível</Text>
-                                 <Text style={styles.result}>Será {parseFloat(liters).toFixed(2)} Litros</Text>
+                              <View style={{ flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+                                 <Text style={styles.result}>com R$ {parseFloat(inputValue).toFixed(2)} de Combustível</Text>
 
                               </View>
                            )}
                         </View>
                         <View style={{ backgroundColor: '#f04242', width: '100%', borderRadius: 5, alignItems: 'center', justifyContent: 'center', padding: 15 }}>
+                           {calculationType === 'liters' ? (
+                              <Text style={[styles.result, { color: '#fff' }]}>Preço total: R$ {totalPrice?.toFixed(2)}</Text>
+                           ) : (
+                              <Text style={[styles.result, { color: '#fff' }]}>{parseFloat(liters).toFixed(2)} litros</Text>
+                           )}
 
-                           <Text style={[styles.result, { color: '#fff' }]}>Preço total: R$ {totalPrice?.toFixed(2)}</Text>
                         </View>
 
                      </View>
@@ -331,7 +345,7 @@ const styles = StyleSheet.create({
    title: {
       fontSize: 25,
       textTransform: 'uppercase',
-      fontWeight: 'bold',
+      fontWeight: '500',
       marginBottom: 20,
       textAlign: 'center',
    },
@@ -352,7 +366,7 @@ const styles = StyleSheet.create({
    selectorText: {
       fontSize: 16,
       color: '#333',
-      fontWeight: 'bold'
+      fontWeight: '400'
    },
    input: {
       borderWidth: 1,
@@ -402,7 +416,7 @@ const styles = StyleSheet.create({
    },
    modalItemText: {
       fontSize: 16,
-      fontWeight: 'bold',
+      fontWeight: '500',
       color: '#fff'
    },
    modalItemSubText: {
