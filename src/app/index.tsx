@@ -9,30 +9,27 @@ export default function Index() {
    const rotateValue = useRef(new Animated.Value(0)).current;
 
    // Função para validar o token com a API externa
-   const validateToken = async (token: any) => {
+   const validateToken = async (token: string) => {
       try {
-         const response = await fetch('http://seu-servidor.com/validate-token', {
+         // Chame a API para verificar a validade do token
+         const response = await fetch('https://gas-price-api.vercel.app/validate-token', {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
+               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ token }),
          });
 
-         const data = await response.json();
-
          if (response.ok) {
-            return data.valid; // Retorna se o token é válido
+            const data = await response.json();
+            return data.valid; // Suponha que a API retorne um campo `valid`
          }
-
-         console.warn('Erro ao validar token:', data.error);
          return false;
       } catch (error) {
          console.error('Erro ao validar token:', error);
          return false;
       }
    };
-
 
    // Verificar autenticação
    const checkAuthentication = async () => {
