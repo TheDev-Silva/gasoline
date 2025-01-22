@@ -10,7 +10,7 @@ import SearchBarModal from '../searchBarModal';
 import React from 'react';
 
 
-interface UserProps {
+export interface UserProps {
    id: string;
    name: string;
    email: string;
@@ -29,13 +29,12 @@ export const fuelTypes = [
 
 export default function Welcome() {
    const router = useRouter();
-   const [user, setUser] = useState<UserProps | null>(null);
-   const [isLoading, setIsLoading] = useState(true);
+  
    const [modalVisible, setModalVisible] = useState(false)
    const [isRefreshing, setIsRefreshing] = useState(false);
    const [exitApp, setExitApp] = useState(false);
 
-   const { fuelPrices, fetchFuelPrices, address, handleFetchLocation, refreshKey, refresh } = useFuelPrices();
+   const { fuelPrices, fetchFuelPrices, address, handleFetchLocation, refreshKey, refresh, user, isLoading, fetchUserData, setIsLoading } = useFuelPrices();
    const lastFuelPriceUser: FuelPrice | null =
       fuelPrices.length > 0
          ? [...fuelPrices].sort(
@@ -75,60 +74,12 @@ export default function Welcome() {
    //console.log(lastFuelPriceUser)
 
    //console.log('dados de:', fuelPrices);
-   const fetchUserData = async () => {
+   
 
-      try {
-         const token = await AsyncStorage.getItem('tokenAuthentication');
-         console.log(token)
-         if (!token) {
-            Toast.show({
-               type: 'error',
-               text1: 'Erro de autenticação de usuário!',
-               text2: 'Token de autenticação não encontrado.',
-            });
-            setIsLoading(false);
-            return;
-         }
-
-         const response = await fetch(`https://gas-price-api.vercel.app/register-userId`, {
-            method: 'GET',
-            headers: {
-               'Content-Type': 'application/json',
-               Authorization: `Bearer ${token}`,
-            },
-         });
-
-         if (response.ok) {
-            const data = await response.json();
-            setUser(data);
-         } else {
-            const errorData = await response.json();
-            Toast.show({
-               type: 'error',
-               text1: 'Erro de autenticação',
-               text2: errorData.error || 'Token inválido ou expirado.',
-            });
-            //router.push('/login')
-         }
-      } catch (error) {
-         Toast.show({
-            type: 'error',
-            text1: 'Erro de conexão',
-            text2: 'Não foi possível conectar ao servidor.',
-         });
-      } finally {
-         setIsLoading(false)
-      }
-   };
-
-   const fuelPricesExist = () => {
-      return fuelPrices && fuelPrices.length > 0; // Verifica se há preços cadastrados
-   };
 
    useEffect(() => {
       fetchUserData();
       fetchFuelPrices(); // Carrega os preços de combustível
-
       refresh()
    }, []);
 
