@@ -2,14 +2,16 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Animated, Easing } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useFuelPrices from './context/fuelPriceAPI';
 
 export default function Index() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(true);
    const rotateValue = useRef(new Animated.Value(0)).current;
+   //const { checkAuthentication } = useFuelPrices()
 
    // Função para validar o token com a API externa
-   const validateToken = async (token: string) => {
+   /* const validateToken = async (token: string) => {
       try {
          // Chame a API para verificar a validade do token
          const response = await fetch('https://gas-price-api.vercel.app/validate-token', {
@@ -53,7 +55,7 @@ export default function Index() {
       } finally {
          setIsLoading(false); // Finaliza o estado de carregamento
       }
-   };
+   }; */
 
    // Inicializar animação
    const startRotation = () => {
@@ -68,10 +70,10 @@ export default function Index() {
       ).start();
    };
 
-   useEffect(() => {
+   /* useEffect(() => {
       checkAuthentication(); // Verifica a autenticação ao montar o componente
       startRotation(); // Inicia a animação
-   }, []);
+   }, []); */
 
    // Interpolação para animação de rotação
    const rotateAnimation = rotateValue.interpolate({

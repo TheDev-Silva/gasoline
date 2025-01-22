@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message'
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard'
 import { URL_API } from '../../constants/base';
+import useFuelPrices from './context/fuelPriceAPI';
 
 
 interface SearchBarModalProps {
@@ -93,13 +94,13 @@ const SearchBarModal: React.FC<SearchBarModalProps> = ({ visible, onClosed }) =>
          await Clipboard.setStringAsync(textToCopy);
          Toast.show({
             type: 'success',
-            
+
             text2: 'Texto copiado para a área de transferência',
          });
       } catch (error) {
          Toast.show({
             type: 'error',
-            
+
             text2: 'Não foi possível copiar para a área de transferência',
          });
       }
